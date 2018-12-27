@@ -1,0 +1,90 @@
+html{
+    color:#000;
+    background:#FFF
+}
+html,body {
+	font: normal 12px/12px "微软雅黑";
+}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,
+code,form,fieldset,legend,input,textarea,p,blockquote,th,td{
+    margin:0;
+    padding:0
+}
+table{
+    border-collapse:collapse;
+    border-spacing:0
+}
+fieldset,img{
+    border:0
+}
+address,caption,cite,code,dfn,em,strong,th,var{
+    font-style:normal;
+    font-weight:normal
+}
+li{
+    list-style:none
+}
+caption,th{
+    text-align:left
+}
+h1,h2,h3,h4,h5,h6{
+    font-size:100%;
+    font-weight:normal
+}
+q:before,q:after{
+    content:''
+}
+abbr,acronym{
+    border:0;
+    font-variant:normal;/*small-caps 小型的大写字母体*/
+}
+/*上标*/
+sup{
+    vertical-align:text-top;/*把元素的顶端与父元素字体的顶端对齐*/
+}
+/*下标*/
+sub{
+    vertical-align:text-bottom;/*把元素的顶端与父元素字体的底端对齐*/
+}
+/*在浏览器中input，textarea（文本框），select（多选元素）中的字体都会比父元素的小。*/
+input,textarea,select{
+    font-family:inherit;/*从父元素继承字体*/
+    font-size:inherit;/*从父元素继承字体*/
+    font-weight:inherit;/*从父元素继承字体*/
+}
+/*处理IE6/7的情况*/
+input,textarea,select{
+    *font-size:100%
+}
+/*legend不会继承field的color属性；所以要单独设legend的文字颜色。*/
+legend{
+    color:#000
+}
+body{
+    /*字号13像素，行高为1.231倍*/
+    font:13px/1.231 arial,helvetica,clean,sans-serif;
+    *font-size:small;/*IE6跟7*/
+    *font:x-small;/*IE怪异模式*/
+}
+select,input,button,textarea{
+    font:99% arial,helvetica,clean,sans-serif
+}
+table{
+    font-size:inherit;
+    font:100%
+}
+pre,code,kbd,samp,tt{
+    font-family:monospace;
+    *font-size:108%;
+    line-height:100%
+}
+.clear{
+    zoom:1;
+}
+.clear:after{
+    content:"";
+    height:0;
+    visibility:hidden;
+    display:block;
+    clear:both;
+}

@@ -1,0 +1,85 @@
+/* ä¸»ä½“å†…å®¹éƒ¨åˆ†*/
+#section{
+	margin:0 auto;
+	width: 1194px;
+	min-height: 730px;
+	margin-top: 12px;
+	margin-bottom: 10px;
+	border:1px solid #ccc;
+}
+/* ä¸»ä½“å†…å®¹å·¦ä¾§éƒ¨åˆ†*/
+#section .sec_left{
+	width: 182px;
+	min-height: 730px;
+	border-right: 1px solid #ccc;
+	padding-top: 2px;
+}
+#section .sec_left ul{
+	width: 100%;
+}
+#section .sec_left ul li{
+	width: 100%;
+}
+#section .sec_left ul li h2{
+	width: 192px;
+	height: 31px;
+	background: url(../../images/resource_list_bg.png) no-repeat 0;
+	position: relative;
+	left: -6px;
+	cursor: pointer;
+}
+#section .sec_left ul li h2 p{
+	height: 31px;
+	font-size: 16px;
+	line-height:28px;
+	color: #fff;
+	font-weight: normal;
+	text-indent: 25px;
+}
+#section .sec_left ul li dl{
+	width: 182px;
+	padding: 10px 0 6px 0;
+	display: none;
+}
+#section .sec_left ul li dl dd{
+	box-sizing:border-box;
+	width: 100%;
+	margin-bottom: 4px;
+	height: 27px;
+	font-size: 14px;
+	color:#646464 ;
+	line-height: 27px;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	background: #e6e6e6;
+	text-align: center;
+	cursor: pointer;
+}
+#section .sec_left ul li dl dd.active{
+	width: 183px;
+	border-right: 1px solid #fff;
+	background: #fff !important;
+	color:#646464 ;
+}
+/* ä¸»ä½“å†…å®¹å³ä¾§éƒ¨åˆ†*/
+#section .sec_right{
+	width: 1011px;
+	min-height: 730px;
+	position: relative;
+}
+#section .sec_right .content{
+	width: 100%;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+}
+#section .sec_right .content ul{
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+#section .sec_right .content ul li{
+	display: none;
+	width: 100%;
+	height: 100%;
+}

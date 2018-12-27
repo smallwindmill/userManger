@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>用户管理</title>
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./lib/bootstrap-table/bootstrap-table.min.css">
+    <!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.0/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="page-wrap" id="body">
+        <div class="page-head">
+            <div class="page-head-wrap">
+                <!-- <div id="btn" class="btn btn-success">test</div> -->
+                <div class="page-logo"></div>
+                <!-- 导航与工具条 -->
+                <div class="page-head-bar">
+                    <!-- 回到首页 -->
+                    <a class="page-back-home" title="返回" href="./index.html"><i class="fa fa-arrow-right "></i><!-- 返回 --></a>
+                </div>
+            </div>
+        </div>
+
+      <div class="row content-container">
+        <!-- 头部切换菜单 -->
+        <div class="col-12 slideMenu" id="slideMenu">
+             <ul class="row menuBar">
+                 <li id="member" class="col-2 btn btn-function active"><div class="iconContainer">
+                     <i class="fa fa-map"></i>
+                     <span>部门人员</span>
+
+                 </div></li>
+                 <li id="character" class="col-2 btn btn-function"><div class="iconContainer">
+                     <i class="fa fa-user"></i>
+                     <span>角色管理</span>
+
+                 </div></li>
+                 <li id="authority" class="col-2 btn btn-function"><div class="iconContainer">
+                     <i class="fa fa-cog"></i>
+                     <span>权限管理</span>
+                 </div></li>
+             </ul>
+        </div>
+
+        <!-- 左侧树形菜单 -->
+        <div class="col-2 tree-container scrollbar-y">
+           <div id="memberTree" class="tree"></div>
+        </div>
+        <div id="foldTree" class="hidden"><i class="fa fa-chevron-left"></i></div>
+        <div id="cancelFoldTree" class="hidden"><i class="fa fa-chevron-right"></i></div>
+
+        <!-- 右侧内容 -->
+        <div class="col-10 content" id="content">
+
+            <!-- 部门人员 -->
+            <div id="member" class="content-content">
+               <div class="plane">
+                 <div class="card mb-3">
+                   <div class="card-header text-dark"><span>部门人员</span></div>
+                   <div class="card-body">
+                      <h5 class="row card-title" style="padding-left: 1rem">
+                         <div class="col member-action action-group scrollbar-x">
+                           <button class="member-action-btn btn btn-primary"  id="addMember"><i class="fa fa-plus-circle"></i>新增</button>
+                           <button class="member-action-btn btn btn-primary" id="deleteMember"><i class="fa fa-trash"></i>删除</button>
+                           <button class="member-action-btn btn btn-primary" id="editMember"><i class="fa fa-pencil"></i>修改</button>
+                           <button class="member-action-btn btn btn-primary" id="toGiveCharacter"><i class="fa fa-exchange"></i>分配角色</button>
+                         </div>
+                         <div class="col text-right">
+                            <form class="form-inline">
+                             <div class="input-group mb-2 mr-sm-2">
+                               <input type="text" class="form-control" id="searchMember" placeholder="请输入关键字">
+                             </div>
+                             <button type="button" id="searchMemberBtn" style="margin-left: 1rem;" class="btn btn-info search-head-btn mb-2">查询</button>
+                           </form>
+                         </div>
+                      </h5>
+
+                      <div class="table-content scrollbar-x scrollbar-y">
+                         <table id="memberTable" class="table table-striped">
+                           <thead class="">
+                             <tr>
+                              <th scope="col"><input type="checkbox" name="" id="checkAll" class="checkAll"></th>
+                              <th scope="col">序号</th>
+                              <th scope="col">登录名</th>
+                              <th scope="col">姓名</th>
+                              <th scope="col">性别</th>
+                              <th scope="col">所属岗位</th>
+                              <th scope="col">状态</th>
+                              <th scope="col">创建时间</th>
+                              <th scope="col">操作</th>
+                            </tr>
+                           </thead>
+                           <tbody>
+
+                           </tbody>
+                         </table>
+                      </div>
+
+                      <div class="tablefooter clearfix">
+                        <div class="textInfo float-left" >总共有<span id="totalTable" class="text-primary" style="padding-right: 2rem;">8条数据</span>当前选中<span id="selectedTable" class="text-primary">0条数据</span></div>
+                          <ul class="pagination float-right">
+                             <li class="page-item previousPage">
+                               <a class="page-link" href="#" aria-label="Previous">
+                                 <span aria-hidden="true">&laquo;</span>
+                                 <span class="sr-only">Previous</span>
+                               </a>
+                             </li>
+                             <li class="page-item"><a class="page-link" href="#">1</a></li>
+                             <li class="page-item"><a class="page-link" href="#">2</a></li>
+                             <li class="page-item"><a class="page-link" href="#">3</a></li>
+                             <li class="page-item nextPage">
+                               <a class="page-link" href="#" aria-label="Next">
+                                 <span aria-hidden="true">&raquo;</span>
+                                 <span class="sr-only">Next</span>
+                               </a>
+                             </li>
+                          </ul>
+                        </div>
+                      </div>
+               </div>
+              </div>
+            </div>
+
+            <!-- 角色管理 -->
+            <div id="character" class="content-content">
+               <div class="plane">
+                 <!-- <div class="subheader">用户管理</div> -->
+                 <div class="card mb-3">
+                   <div class="card-header text-dark"><span>角色管理</span></div>
+                   <div class="card-body">
+                     <h5 class="row card-title" style="padding-left: 1rem">
+                       <div class="col character-action action-group scrollbar-x">
+                         <button class="character-action-btn btn btn-primary"  id="addCharacter"><i class="fa fa-plus-circle"></i>新增</button>
+                         <button class="character-action-btn btn btn-primary" id="deleteCharacter"><i class="fa fa-trash"></i>删除</button>
+                         <button class="character-action-btn btn btn-primary" id="toGivePower"><i class="fa fa-exchange"></i>分配权限</button>
+                         <button class="character-action-btn btn btn-primary" id="toPowerMember"><i class="fa fa-user-plus"></i>人员赋予</button>
+                       </div>
+                       <div class="col text-right">
+                          <form class="form-inline">
+                           <div class="input-group mb-2 mr-sm-2">
+                             <input type="text" class="form-control" id="searchCharacter" placeholder="请输入关键字">
+                           </div>
+                           <button type="button" id="searchCharacterBtn" style="margin-left: 1rem;" class="btn btn-info search-head-btn mb-2">查询</button>
+                         </form>
+                       </div>
+
+                     </h5>
+                     <div class="table-content scrollbar-x scrollbar-y">
+                       <table id="characterTable" class="table table-striped">
+                         <thead class="">
+                           <tr>
+                             <th scope="col"><input type="checkbox" name="" id="checkAll" class="checkAll"></th>
+                             <!-- <th scope="col">序号</th> -->
+                             <th scope="col">角色名称</th>
+                             <th scope="col">创建人</th>
+                             <th scope="col">备注</th>
+                             <th scope="col">创建时间</th>
+                             <th scope="col">操作</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+
+                         </tbody>
+                         <!-- <tfoot> -->
+                         <!-- </tfoot> -->
+                       </table>
+                     </div>
+                   </div>
+                   <div class="tablefooter clearfix">
+                     <div class="textInfo float-left" >总共有<span id="totalTable" class="totalTable text-primary" style="padding-right: 2rem;">8条数据</span>当前选中<span id="selectedTable" class="selectedTable text-primary">0条数据</span></div>
+                     <ul class="pagination float-right">
+                       <li class="page-item previousPage">
+                         <a class="page-link" href="#" aria-label="Previous">
+                           <span aria-hidden="true">&laquo;</span>
+                           <span class="sr-only">Previous</span>
+                         </a>
+                       </li>
+                       <li class="page-item"><a class="page-link" href="#">1</a></li>
+                       <li class="page-item"><a class="page-link" href="#">2</a></li>
+                       <li class="page-item"><a class="page-link" href="#">3</a></li>
+                       <li class="page-item nextPage">
+                         <a class="page-link" href="#" aria-label="Next">
+                           <span aria-hidden="true">&raquo;</span>
+                           <span class="sr-only">Next</span>
+                         </a>
+                       </li>
+                     </ul>
+                   </div>
+                 </div>
+               </div>
+            </div>
+
+             <!-- 权限管理 -->
+            <div id="authority" class="content-content">
+               <div class="plane">
+                 <!-- <div class="subheader">用户管理</div> -->
+                 <div class="card mb-3">
+                   <div class="card-header text-dark"><span>权限管理</span></div>
+                   <div class="card-body">
+                     <h5 class="row card-title" style="padding-left: 1rem">
+                       <div class="col authority-action action-group scrollbar-x">
+                         <button class="authority-action-btn btn btn-primary"  id="addAuthority"><i class="fa fa-plus-circle"></i>新增</button>
+                         <button class="authority-action-btn btn btn-primary" id="deleteAuthority"><i class="fa fa-trash"></i>删除</button>
+                         <button class="authority-action-btn btn btn-primary" id="editAuthority"><i class="fa fa-pencil"></i>修改</button>
+                       </div>
+                       <div class="col text-right">
+                          <form class="form-inline">
+                           <div class="input-group mb-2 mr-sm-2">
+                             <input type="text" class="form-control" id="searchAuthority" placeholder="请输入关键字">
+                           </div>
+                           <button type="button" id="searchAuthorityBtn" style="margin-left: 1rem;" class="btn btn-info search-head-btn mb-2">查询</button>
+                         </form>
+                       </div>
+
+                     </h5>
+                     <div class="table-content scrollbar-x scrollbar-y">
+                       <table id="authorityTable" class="table table-striped">
+                         <thead class="">
+                           <tr>
+                             <th scope="col"><input type="checkbox" name="" id="checkAll" class="checkAll"></th>
+                              <!-- <th scope="col">序号</th> -->
+                             <th scope="col">权限名称</th>
+                             <th scope="col">状态</th>
+                             <th scope="col">所属权限组</th>
+                             <th scope="col">链接地址</th>
+                             <th scope="col">创建时间</th>
+                             <th scope="col">操作</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+
+                         </tbody>
+                         <!-- <tfoot> -->
+                         <!-- </tfoot> -->
+                       </table>
+                     </div>
+                   </div>
+                   <div class="tablefooter clearfix">
+                     <div class="textInfo float-left" >总共有<span id="totalTable" class="text-primary" style="padding-right: 2rem;">8条数据</span>当前选中<span id="selectedTable" class="text-primary">0条数据</span></div>
+                     <ul class="pagination float-right">
+                       <li class="page-item previousPage">
+                         <a class="page-link" href="#" aria-label="Previous" >
+                           <span aria-hidden="true">&laquo;</span>
+                           <span class="sr-only">Previous</span>
+                         </a>
+                       </li>
+                       <li class="page-item"><a class="page-link" href="#">1</a></li>
+                       <li class="page-item"><a class="page-link" href="#">2</a></li>
+                       <li class="page-item"><a class="page-link" href="#">3</a></li>
+                       <li class="page-item nextPage">
+                         <a class="page-link" href="#" aria-label="Next">
+                           <span aria-hidden="true">&raquo;</span>
+                           <span class="sr-only">Next</span>
+                         </a>
+                       </li>
+                     </ul>
+                   </div>
+                 </div>
+               </div>
+            </div>
+        </div>
+
+      </div>
+
+
+
+        <!-- 新增人员模态框 -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="newMemberModal">
+          <div class="modal-dialog modal-lg2" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">新增人员</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="name">姓名</label>
+                      <input type="text" class="form-control" id="name" aria-describedby="textHelp" placeholder="填写名称">
+                      <!-- <small id="textHelp" class="form-text text-muted">填写名称</small> -->
+                    </div>
+                    <div class="col form-group form-inline2">
+                      <label for="char1">岗位</label>
+                      <input type="text" class="form-control" id="post" placeholder="岗位">
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char2">登录名</label>
+                      <input type="text" class="form-control" id="loginName" placeholder="字段2">
+                    </div>
+                    <div class="col form-group form-inline2">
+                      <label for="char3">登录密码</label>
+                      <input type="password" class="form-control" id="password" placeholder="字段3">
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">性别</label>
+                      <div style="padding-left:2rem">
+                        <div class="custom-control custom-radio  custom-control-inline">
+                          <input type="radio" id="memberSex1" name="sex" class="custom-control-input" value="0" checked>
+                          <label class="custom-control-label" for="memberSex1">男</label>
+                        </div>
+                        <div class="custom-control custom-radio  custom-control-inline">
+                          <input type="radio" id="memberSex2" name="sex" class="custom-control-input" value="1">
+                          <label class="custom-control-label" for="memberSex2">女</label>
+                          <!-- $('input:radio:checked').val() -->
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col form-group form-inline2">
+                      <label for="char3">编制</label>
+                      <!-- <input type="text" class="form-control" id="char3" placeholder="字段3"> -->
+                      <select name="work-out" id="workOut"  class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">身份证号</label>
+                      <input type="text" class="form-control" id="IDNumber" placeholder="字段3">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="remark">备注</label>
+                      <textarea class="form-control" name="" id="remark" rows=3 placeholder="请输入备注"></textarea>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">关闭</button>
+                <button type="button" id="addLayerBtn" class="btn btn-primary">确认</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 新增用户节点模态框 -->
+        <div class="modal modal fade" tabindex="-1" role="dialog" id="memberNodeModal">
+          <div class="modal-dialog modal-lg2" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">新增节点</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">上级部门</label>
+                      <!-- <input type="text" class="form-control" id="char3" placeholder="字段3"> -->
+                      <select name="work-out" id="memberLead" placeholder="无"  class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char2">名称</label>
+                      <input type="text" class="form-control" id="memberNodeName" placeholder="请输入节点名称">
+                    </div>
+                     <!-- <div class="col form-group form-inline2">
+                     <label for="char3">登录密码</label>
+                      <input type="password" class="form-control" id="password" placeholder="字段3">
+                    </div> -->
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">类型</label>
+                      <!-- <input type="text" class="form-control" id="char3" placeholder="字段3"> -->
+                      <select name="work-out" id="memberType" placeholder="请选择节点类型" class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                    <!-- <div class="col form-group form-inline2">
+                      <label for="char3">编制</label>
+                      <select name="work-out" id="workOut"  class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>-->
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">工作职责</label>
+                      <textarea class="form-control" id="memberDuty" placeholder="请输入工作职责" rows=3></textarea>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="remark">备注</label>
+                      <textarea class="form-control" name="" id="memberNoderemark" rows=3  placeholder="请输入备注"></textarea>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal" id="cancelSaveDrawFigure">取消</button>
+                <button type="button" class="btn btn-primary" id="saveDrawFigure">保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 人员分配角色模态框 -->
+        <div class="modal modal fade" tabindex="-1" role="dialog" id="giveCharacterModal">
+          <div class="modal-dialog modal-lg2" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">分配角色</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                <div class="areaRoute">
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item"><a href="#">一层楼</a></li>
+                      <li class="breadcrumb-item"><a href="#">二层楼</a></li>
+                      <li class="breadcrumb-item active" aria-current="page">三层楼</li>
+                    </ol>
+                  </nav>
+                </div>
+                <div class="choiceSquare">
+                  <div class="title breadcrumb">基本信息</div>
+                  <div class="row choice">
+                    <div class="col">
+                      <div class="search">
+                        <input type="text" class="form-control" id="search" placeholder="请输入关键字查询">
+                      </div>
+                      <ul id="notSet" class="areaList scrollbar-y">
+                        <li>123181 <i class="fa fa-plus"></i></li>
+                        <li>2y222h <i class="fa fa-plus"></i></li>
+                        <li>33h33 <i class="fa fa-plus"></i></li>
+                        <li>5e55 <i class="fa fa-plus"></i></li>
+                        <li>77a77 <i class="fa fa-plus"></i></li>
+                      </ul>
+                    </div>
+                    <div class="changicon"></div>
+                    <div class="col">
+                      <div class="search">
+                        <p>已选择人员<span class="count text-primary" style="padding-left: .5rem;"></span></p>
+                      </div>
+                      <ul id="seted" class="areaList scrollbar-y">
+                        <li>1fgh14h1 <i class="fa fa-minus"></i></li>
+                        <li>ghmlp98de <i class="fa fa-minus"></i></li>
+                        <li>t2fvsdfegerg <i class="fa fa-minus"></i></li>
+                        <li>b46sdfgdgd <i class="fa fa-minus"></i></li>
+                        <li>fhghsgrhrtdht<i class="fa fa-minus"></i></li>
+                      </ul>
+                    </div>
+                  </div>
+
+                </div>
+                <!-- <form>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">上级部门</label>
+                      <input type="text" class="form-control" id="char3" placeholder="字段3">
+                      <select name="work-out" id="memberLead" placeholder="无"  class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char2">名称</label>
+                      <input type="text" class="form-control" id="memberNodeName" placeholder="请输入节点名称">
+                    </div>
+                    <div class="col form-group form-inline2">
+                      <label for="char3">登录密码</label>
+                      <input type="password" class="form-control" id="password" placeholder="字段3">
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">类型</label>
+                      <input type="text" class="form-control" id="char3" placeholder="字段3">
+                      <select name="work-out" id="memberType" placeholder="请选择节点类型" class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                    <div class="col form-group form-inline2">
+                      <label for="char3">编制</label>
+                      <input type="text" class="form-control" id="char3" placeholder="字段3">
+                      <select name="work-out" id="workOut"  class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">工作职责</label>
+                      <textarea class="form-control" id="memberDuty" placeholder="请输入工作职责" rows=3></textarea>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="remark">备注</label>
+                      <textarea class="form-control" name="" id="memberNoderemark" rows=3  placeholder="请输入备注"></textarea>
+                    </div>
+                  </div>
+                </form> -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal" id="cancelSaveDrawFigure">取消</button>
+                <button type="button" class="btn btn-primary" id="saveDrawFigure">保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 新增角色模态框 -->
+        <div class="modal modal fade" tabindex="-1" role="dialog" id="newCharacterModal">
+          <div class="modal-dialog modal-lg2" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">新增角色</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char2">名称</label>
+                      <input type="text" class="form-control" id="characterName" placeholder="请输入角色名称">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">备注</label>
+                      <textarea class="form-control" id="characterRemark" placeholder="请输入工作职责" rows=3></textarea>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal" id="cancelSaveDrawFigure">取消</button>
+                <button type="button" class="btn btn-primary" id="saveDrawFigure">保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 新增权限节点模态框 -->
+        <div class="modal modal fade" tabindex="-1" role="dialog" id="newAuthorityModal">
+          <div class="modal-dialog modal-lg2" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">新增节点</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">上级权限组</label>
+                      <!-- <input type="text" class="form-control" id="char3" placeholder="字段3"> -->
+                      <select name="work-out" id="authorityLead" placeholder="无"  class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char2">名称</label>
+                      <input type="text" class="form-control" id="authorityNodeName" placeholder="请输入权限名称">
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">匹配方式</label>
+                      <input type="text" class="form-control" id="matchType" placeholder="精准">
+                    </div>
+                  </div>
+                  <div class="row clearfix">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">链接地址</label>
+                      <!-- <input type="text" class="form-control" id="char3" placeholder="字段3"> -->
+                      <input type="text" class="form-control" id="hrefAddress" placeholder="请输入链接地址">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col form-group form-inline2">
+                      <label for="char3">参数集</label>
+                      <textarea class="form-control" id="authorityDuty" placeholder="请输入工作职责" rows=3></textarea>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal" id="cancelSaveDrawFigure">取消</button>
+                <button type="button" class="btn btn-primary" id="saveDrawFigure">保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 上传文件 -->
+        <div class="modal modal-lg fade" tabindex="-1" role="dialog" id="upLoadFilePop">
+          <div class="modal-dialog modal-lg2" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">上传数据文件</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                <form class="row">
+                  <div class="form-group col" style="padding-left:2rem;">
+                     <p></p>
+                     <label for="uploadFileBtn" id="uploadFileLabel" class="btn2 btn-dark2"><i class="fa fa-plus"></i><span>&nbsp;&nbsp;请选择上传文件&nbsp;</span></label>
+                     <input type="file" class=""  id="uploadFileBtn" style="position:absolute;z-index: -2;" aria-describedby="textHelp" placeholder="请选择上传文件">
+                     <!-- <small id="textHelp" class="form-text text-muted">填写名称</small> -->
+                     <h6 class="h6" style="margin-top: 1rem;">注：目前支持Excel、压缩为ZIP格式的shp文件。</h6>
+                  </div>
+                  <!-- <div class="form-group col-6 text-center">
+                      <p></p>
+                      <a target="downland" class="btn btn-success text-white" id="downloadFileBtn" aria-describedby="textHelp"  style="margin-right: 1rem;">下载模板</a>
+                  </div> -->
+
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">取消</button>
+                <button type="button" id="uploadBtn" class="btn btn-primary">提交</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+<script src="./js/data_switch/apiconfig.js"></script>
+<script src="./lib/jquery/jquery-1.11.1.js"></script>
+<script src="https://cdn.bootcss.com/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<!-- <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.0/js/bootstrap.min.js"></script> -->
+<!-- <script src="https://cdn.bootcss.com/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script> -->
+<script src="tree.js"></script>
+<script src="./lib/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="./lib/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+<script src="./js/requestURL.js"></script>
+<script src="./js/script.js"></script>
+<script src="./js/main.js"></script>
+</body>
+</html>
