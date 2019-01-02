@@ -41,12 +41,8 @@ userManage.prototype = {
     init_: function(target,dataSource){
 
     },
-    initPageAction:function(){
+    initPageAction: function(){
       var that = this;
-
-      /*$('.tree-container').off('click').on('click',function(ev){
-        that.clickTarget = ev.target;
-      });*/
 
       // 左侧功能块和右侧容器切换
       $('#slideMenu li').removeClass('btnActive');
@@ -60,33 +56,47 @@ userManage.prototype = {
                 $('#content').find(showContent).removeClass('hidden');
                 if(showContent.indexOf('member')!=-1){
                   that.loadMember('','empty');
-                  that.loadMemberTree();
-                }else if(showContent.indexOf('character')!=-1){
+                  // that.loadMemberTree();
+                }else if(showContent.indexOf('platform')!=-1){
+                  that.loadPlatform('','empty');
+                  // that.loadPlatformTree();
+                }
+               /* else if(showContent.indexOf('character')!=-1){
                   that.loadCharacter('','empty');
                   that.loadCharacterTree();
                 }else if(showContent.indexOf('authority')!=-1){
                   that.loadAuthority('','empty');
                   that.loadAuthorityTree();
-                }
+                }*/
             })
       });
 
-
-      $('.table-content').height($('.table-content').parent().height()-$('.table-content').parent().find('h5').height()-$('.table-content').parent().parent().find('.tablefooter').height()-60);
-
-
+      $('.table-content').each(function(){
+        var height = $(this).parent().height()-$(this).parent().find('h5').height()-$(this).parent().parent().find('.tablefooter').height()-60;
+        $(this).height(height);
+      });
+      // $('.table-content').height($('.table-content').parent().height()-$('.table-content').parent().find('h5').height()-$('.table-content').parent().parent().find('.tablefooter').height()-60);
 
       // 全选
       $('input.checkAll').off('click').on('click',function(){
+        // console.log($(this).parentsUntil('table').parent());
             if($(this).hasClass('selectedAll')){
                $(this).removeClass('selectedAll');
-               $(this).parentsUntil('table').parent().find('input[type="checkbox"]').prop('checked',false);
+               $(this).parents('.content-content').find('input[type="checkbox"]').prop('checked',false);
             }else{
                 $(this).addClass('selectedAll');
-                $(this).parentsUntil('table').parent().find('input[type="checkbox"]').prop('checked',true);
+                $(this).parents('.content-content').find('input[type="checkbox"]').prop('checked',true);
             }
             // console.log( $(this).parentsUntil('table').parent());
       });
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      // 权限模块下级菜单的返回
+      $('.returnPlatform').off('click').on('click',function(){
+        $(this).parents('.content-content').addClass('hidden');
+        $('#content #platform').removeClass('hidden');
+      })
 
       $('.search-head-btn').off('click').on('click',function(){
         var inputSearch = $(this).parent().find('input').eq(0);
@@ -105,28 +115,32 @@ userManage.prototype = {
       })
 
 
-      // 顶部用户批量删除
+      // 顶部的批量删除
       that.removeBatch = function(target){
+
         var selectTr = target.find('tbody tr input:checked');
         var selectLength = selectTr.length;
-         var selectArr = [];
-         var deleteManyConfirm = function(){
+        var selectArr = [];
+        var deleteManyConfirm = function(){
            var intervel = '';
            intervel = setInterval(function(){
+              $('.table-content').css('overflow-x','hidden');
              if(selectTr.length){
                 selectTr = target.find('tbody tr input:checked');
-                selectArr.push(selectTr.eq(0).parent().parent().prop('id'));
-                 selectTr.eq(0).parent().parent().addClass('remove-animation');
+                selectArr.push(selectTr.eq(0).parents('tr').prop('id'));
+                 selectTr.eq(0).parents('tr').addClass('remove-animation');
                  // var removeTr = $('#memberTable tbody tr input:checked').eq(0).parent().parent();
                  selectTr.eq(0).click();
                  setTimeout(function(){
                    target.find('tbody tr.remove-animation').remove();
                     target.find('tbody tr').each(function(i){
-                     $(this).find('td').eq(0).text(that.setFirstZero(i+1));
+                     // $(this).find('td').eq(0).text(that.setFirstZero(i+1));
                    });
                },2000);
              }else{
               clearInterval(intervel);
+              $('.table-content').css('overflow-x','auto');
+              $('.checkAll').prop('checked',false);
              }
            },100);
          };
@@ -137,173 +151,135 @@ userManage.prototype = {
            that.tips('请至少选择一条记录');
          }
       };
-      /*$('.action-group #deleteMember').off('click').on('click',function(){
-         var selectLength = $('#memberTable tbody tr input:checked').length;
-         var selectArr = [];
-         var deleteManyConfirm = function(){
-           var intervel = '';
-           // for(var i=0;i<$('#memberTable tbody tr input:checked').length;i++){
-           intervel = setInterval(function(){
-             if($('#memberTable tbody tr input:checked').length){
-                selectArr.push($('#memberTable tbody tr input:checked').eq(0).parent().parent().prop('id'));
-                 $('#memberTable tbody tr input:checked').eq(0).parent().parent().addClass('remove-animation');
-                 // var removeTr = $('#memberTable tbody tr input:checked').eq(0).parent().parent();
-                 $('#memberTable tbody tr input:checked').eq(0).click();
-                 setTimeout(function(){
-                   // removeTr.remove();
-                   $('#memberTable tbody tr.remove-animation').remove();
-                   $('#memberTable tbody tr').each(function(i){
-                     $(this).find('td').eq(0).text(that.setFirstZero(i+1));
-                   });
-               },2000);
-                // console.log($('#memberTable tbody tr input:checked').length);
-             }else{
-              clearInterval(intervel);
-             }
-           },100);
-         };
-         // console.log(selectArr);
 
-         if(selectLength){
-           that.confirms({info:'确定删除这'+selectLength+'条数据吗？'},deleteManyConfirm);
-         }else{
-           that.tips('请至少选择一条记录');
-         }
-      });*/
       $('.action-group #deleteMember').off('click').on('click',function(){
         that.removeBatch($('#memberTable'));
       });
-      $('.action-group #deleteCharacter').off('click').on('click',function(){
-        that.removeBatch($('#characterTable'));
+      $('.action-group #deletePlatform').off('click').on('click',function(){
+        that.removeBatch($('#platformTable'));
       });
       $('.action-group #deleteAuthority').off('click').on('click',function(){
         that.removeBatch($('#authorityTable'));
       });
+      $('.action-group #deleteCharacter').off('click').on('click',function(){
+        that.removeBatch($('#characterTable'));
+      });
 
       // 新增用户管理
       $('.member-action #addMember').off('click').on('click',function(){
-         $('#newMemberModal .modal-title').html('新增人员');
+         $('#newMemberModal .modal-title').html('人员新增');
+         // 清空文本框原有内容
+         $('#newMemberModal input:text').val('');
          $('#newMemberModal').modal({'backdrop':'static'});
+          setTimeout(function(){$('#newMemberModal input:text').eq(0).focus();},800);
+
       });
 
 
       that.updateMemberInfo = function(memberValue){
             $('#newMemberModal .modal-title').html('成员修改<small style="padding-left:.5rem">'+memberValue[0]+'</small');
-            $('#newMemberModal #name').val(memberValue[0]);
-            $('#newMemberModal #post').val(memberValue[1]);
-            $('#newMemberModal #loginName').val(memberValue[2]);
-            $('#newMemberModal #password').val(memberValue[3]);
-            $('#newMemberModal #sex').val(memberValue[4]);
-            $('#newMemberModal #workOut').val(memberValue[5]);
-            $('#newMemberModal #IDNumber').val(memberValue[0]);
-            $('#newMemberModal #mark').val(memberValue[0]);
+            $('#newMemberModal input:text').eq(0).val(memberValue[0]);
+            $('#newMemberModal input:text').eq(1).val(memberValue[1]);
+            $('#newMemberModal input:text').eq(2).val(memberValue[2]);
+            $('#newMemberModal input:text').eq(3).val(memberValue[3]);
+            $('#newMemberModal input:text').eq(4).val(memberValue[4]);
+            $('#newMemberModal input:text').eq(5).val(memberValue[5]);
+            $('#newMemberModal input:text').eq(6).val(memberValue[0]);
+            $('#newMemberModal input:text').eq(7).val(memberValue[0]);
 
             $('#newMemberModal').modal({'backdrop':'static'});
+            setTimeout(function(){$('#newMemberModal input:text').eq(0).focus();},800);
+
       };
 
-      that.updateCharacterInfo = function(memberValue){
-            $('#newCharacterModal .modal-title').html('角色修改<small style="padding-left:.5rem">'+memberValue[0]+'</small');
-            $('#newCharacterModal #name').val(memberValue[0]);
-            $('#newCharacterModal #post').val(memberValue[1]);
-            $('#newCharacterModal #loginName').val(memberValue[2]);
-            $('#newCharacterModal #password').val(memberValue[3]);
-            $('#newCharacterModal #sex').val(memberValue[4]);
-            $('#newCharacterModal #workOut').val(memberValue[5]);
-            $('#newCharacterModal #IDNumber').val(memberValue[0]);
-            $('#newCharacterModal #mark').val(memberValue[0]);
+      that.updatePlatformInfo = function(memberValue){
+            $('#newPlatformModal .modal-title').html('基本信息编辑<small style="padding-left:.5rem">'+memberValue[0]+'</small');
+            $('#newPlatformModal input:text').eq(0).val(memberValue[0]);
+            $('#newPlatformModal input:text').eq(1).val(memberValue[1]);
 
-            $('#newCharacterModal').modal({'backdrop':'static'});
+            $('#newPlatformModal').modal({'backdrop':'static'});
+            setTimeout(function(){$('#newPlatformModal input:text').eq(0).focus();},800);
+
       };
 
       that.updateAuthorityInfo = function(memberValue){
-            $('#newAuthorityModal .modal-title').html('权限修改<small style="padding-left:.5rem">'+memberValue[0]+'</small');
-            $('#newAuthorityModal #name').val(memberValue[0]);
-            $('#newAuthorityModal #post').val(memberValue[1]);
-            $('#newAuthorityModal #loginName').val(memberValue[2]);
+            $('#newAuthorityModal .modal-title').html('权限编辑<small style="padding-left:.5rem">'+memberValue[0]+'</small');
+            $('#newAuthorityModal input:text').eq(0).val(memberValue[0]);
+            $('#newAuthorityModal input:text').eq(1).val(memberValue[1]);
+            $('#newAuthorityModal input:text').eq(3).val(memberValue[3]);
+            /*$('#newAuthorityModal #loginName').val(memberValue[2]);
             $('#newAuthorityModal #password').val(memberValue[3]);
             $('#newAuthorityModal #sex').val(memberValue[4]);
             $('#newAuthorityModal #workOut').val(memberValue[5]);
-            $('#newAuthorityModal #IDNumber').val(memberValue[0]);
-            $('#newAuthorityModal #mark').val(memberValue[0]);
+            $('#newAuthorityModal #IDNumber').val(memberValue[0]);*/
+            // $('#newAuthorityModal #mark').val(memberValue[0]);
 
             $('#newAuthorityModal').modal({'backdrop':'static'});
+            setTimeout(function(){$('#newAuthorityModal input:text').eq(0).focus();},800);
+
       };
 
+      that.updateCharacterInfo = function(memberValue){
+            $('#newCharacterModal .modal-title').html('角色编辑<small style="padding-left:.5rem">'+memberValue[0]+'</small');
+            $('#newCharacterModal input:text').eq(0).val(memberValue[0]);
+            $('#newCharacterModal input:text').eq(1).val(memberValue[1]);
+            $('#newCharacterModal input:text').eq(2).val(memberValue[2]);
+            $('#newCharacterModal input:text').eq(3).val(memberValue[3]);
+            $('#newCharacterModal input:text').eq(4).val(memberValue[4]);
+            $('#newCharacterModal input:text').eq(5).val(memberValue[5]);
+            $('#newCharacterModal input:text').eq(6).val(memberValue[0]);
+            $('#newCharacterModal input:text').eq(7).val(memberValue[0]);
+
+            $('#newCharacterModal').modal({'backdrop':'static'});
+            setTimeout(function(){$('#newCharacterModal input:text').eq(0).focus();},800);
+
+      };
+
+
+      // 单个删除
       that.removeRecorder = function(node){
-         // 单个删除
-          var id = $(node).parent().parent().prop('id');
+          var id = $(node).parents('tr').prop('id');
           var deleteConfirm = function(){
-            $(node).parent().parent().addClass('remove-animation');
+            // 防止动画使页面出现滚动条
+            $('.table-content').css('overflow-x','hidden');
+            $(node).parents('tr').addClass('remove-animation');
             setTimeout(function(){
                 var reloadTable =  $(node).parents('table');
-                if($(node).parent().parent().find('input').prop('checked')){
-                  $(node).parent().parent().find('input').click();
+                $(node).parents('tr').find('input').click();
+                if($(node).parents('tr').find('input').prop('checked')){
+                  $(node).parents('tr').find('input').click();
+                  // $(node).parents('tr').find('input').prop('checked',false);
                 };
-                $(node).parent().parent().remove();
-                reloadTable.find('tbody tr').each(function(i){
+                $(node).parents('tr').remove();
+                /*reloadTable.find('tbody tr').each(function(i){
                   $(this).find('td').eq(0).text(that.setFirstZero(i+1));
-                });
+                });*/
             },1000);
+            $('.table-content').css('overflow-x','auto');
           };
-          that.confirms({'title':'警告','info':'确认删除该用户吗？'},deleteConfirm);
+          that.confirms({'title':'警告','info':'确认删除该数据吗？'},deleteConfirm);
       };
 
-      that.setMemberAuthority = function(memberValue){
+      // 成员  权限赋予
+      that.setMemberAuthority = function(memberValue,target){
           // $('#newMemberModal .modal-title').html('修改<small style="padding-left:.5rem">'+memberValue[0]+'</small');
-          $('#newMemberModal #name').val(memberValue[0]);
-          $('#newMemberModal #post').val(memberValue[1]);
-          $('#newMemberModal #loginName').val(memberValue[2]);
-          $('#newMemberModal #password').val(memberValue[3]);
-          $('#newMemberModal #sex').val(memberValue[4]);
-          $('#newMemberModal #workOut').val(memberValue[5]);
-          $('#newMemberModal #IDNumber').val(memberValue[0]);
-          $('#newMemberModal #mark').val(memberValue[0]);
-          $('#giveCharacterModal .choice .search .count').text($('#giveCharacterModal #notSet li').length+$('#giveCharacterModal #seted li').length+'/'+$('#giveCharacterModal #seted li').length);
+          console.log(memberValue);
+          $('#memberGiveCharacterModal .modal-title').html('角色分配-'+memberValue[0]);
+         // 此处请求所有数据
+          $('memberGiveCharacterModal #giveCharacterModal .choice .search .count').text($('#giveCharacterModal #notSet li').length+$('#giveCharacterModal #seted li').length+'/'+$('#giveCharacterModal #seted li').length);
 
-          $('#giveCharacterModal').modal({'backdrop':'static'});
+          $('#memberGiveCharacterModal').modal({'backdrop':'static'});
+          setTimeout(function(){$('#memberGiveCharacterModal input:text').eq(0).focus();},800);
+
       };
 
       // 有变化时，更新表格下方的统计信息
-      that.updateTableBottomInfo = function(target){
-          // console.log(target);
-          target.find('#totalTable').text(target.find('tbody tr').length-target.find('tbody tr.remove-animation').length+'条数据');
-          target.find("input:checkbox").off('change').on('change',function(){
-            // console.log(target.find('tbody tr').length);
-            target.find('#totalTable').text(target.find('tbody tr').length-target.find('tbody tr.remove-animation').length+'条数据');
-            target.find('#selectedTable').text(target.find('tbody tr input:checked').length+'条数据');
-          });
-
-          // 用户管理单个数据操作
-          target.find('tr td a.update').off('click').on('click',function(){
-            var memberValue = [$(this).parent().parent().find('td').eq(1).text(),$(this).parent().parent().find('td').eq(2).text(),$(this).parent().parent().find('td').eq(3).text(),$(this).parent().parent().find('td').eq(4).text(),$(this).parent().parent().find('td').eq(5).text()];
-              console.log(target.prop('id'));
-              if(target.prop('id')=='member'){
-                that.updateMemberInfo(memberValue,target);
-              }else if(target.prop('id')=='character'){
-                that.updateCharacterInfo(memberValue,target);
-              }else if(target.prop('id')=='authority'){
-                that.updateAuthorityInfo(memberValue,target);
-              }
-
-          });
-
-          target.find('tr td a.delete').off('click').on('click',function(){
-            var memberValue = [$(this).parent().parent().find('td').eq(1).text(),$(this).parent().parent().find('td').eq(2).text(),$(this).parent().parent().find('td').eq(3).text(),$(this).parent().parent().find('td').eq(4).text(),$(this).parent().parent().find('td').eq(5).text()];
-             that.removeRecorder(this,target);
-          });
-
-          target.find('tr td a.toGiveCharacter').off('click').on('click',function(){
-            var memberValue = [$(this).parent().parent().find('td').eq(1).text(),$(this).parent().parent().find('td').eq(2).text(),$(this).parent().parent().find('td').eq(3).text(),$(this).parent().parent().find('td').eq(4).text(),$(this).parent().parent().find('td').eq(5).text()];
-            that.setMemberAuthority(memberValue,target);
-          });
-
-          // that.changePagination(target);
-      };
+      // that.updateTableBottomInfo = function(target){
+      // that.prototype.
       $('#slideMenu li').eq(0).click();
 
       // 修改用户
       $('.member-action #editMember').off('click').on('click',function(){
-          // $('#newMemberModal').modal({'backdrop':'static'});
           var selectLength = $('#memberTable tbody tr input:checked').length;
           if(!selectLength){
             that.tips('请选择一条记录');
@@ -312,7 +288,7 @@ userManage.prototype = {
             that.tips('最多只能选择一条记录');
             return;
           }
-         // $('#newMemberModal').modal({'backdrop':'static'});
+
          var memberTr = $('#memberTable tr input:checked').parents('tr');
          // console.log(memberTr);
          var memberValue = [memberTr.find('td').eq(1).text(),memberTr.find('td').eq(2).text(),memberTr.find('td').eq(3).text(),memberTr.find('td').eq(4).text(),memberTr.find('td').eq(5).text()];
@@ -320,7 +296,7 @@ userManage.prototype = {
          that.updateMemberInfo(memberValue);
       });
 
-      // 用户管理分配角色
+      // 用户管理 分配角色
       $('.member-action #toGiveCharacter').off('click').on('click',function(){
           var selectLength = $('#memberTable tbody tr input:checked').length;
           if(!selectLength){
@@ -330,76 +306,163 @@ userManage.prototype = {
             that.tips('最多只能选择一条记录');
             return;
           };
-
          var memberTr = $('#memberTable tr input:checked').parents('tr');
          // console.log(memberTr);
-         that.setMemberAuthority(memberTr);
+          var value = [memberTr.find('td').eq(0).text(),memberTr.find('td').eq(1).text(),memberTr.find('td').eq(2).text(),memberTr.find('td').eq(3).text(),memberTr.find('td').eq(4).text()];
+
+         that.setMemberAuthority(value,memberTr);
       });
 
 
-       // 用户角色分配穿梭框
-       $('#giveCharacterModal .areaList li').off('click').on('click',function(){
-         $(this).siblings().removeClass('active');
-         $(this).addClass('active');
-       });
-       var choiceSet = function(){
-         $('#giveCharacterModal #notSet li .fa-plus').off('click').on('click',function(){
-            var nodeClone = $(this).parent().clone();
-            nodeClone.removeClass('active').find('.fa-plus').removeClass('fa-plus').addClass('fa-minus');
-            $(this).parent().remove();
-            // console.log(nodeClone);
-            $('#giveCharacterModal #seted').append(nodeClone);
-            $('.choice .search .count').text($('#giveCharacterModal #notSet li').length+$('#giveCharacterModal #seted li').length+'/'+$('#giveCharacterModal #seted li').length);
-            choiceSet();
-            choiceNotSet();
-         });
-       };
-       var choiceNotSet = function(){
-         $('#giveCharacterModal #seted li .fa-minus').off('click').on('click',function(){
-            var nodeClone = $(this).parent().clone();
-            nodeClone.removeClass('active').find('.fa-minus').removeClass('fa-minus').addClass('fa-plus');
-            $(this).parent().remove();
-            $('#giveCharacterModal #notSet').append(nodeClone);
-            $('.choice .search .count').text($('#giveCharacterModal #notSet li').length+$('#giveCharacterModal #seted li').length+'/'+$('#giveCharacterModal #seted li').length);
-            choiceSet();
-            choiceNotSet();
-         });
-       };
-       choiceSet();
-       choiceNotSet();
-       // 角色分配模糊匹配
-       $('.choice #search').off('keyup').on('keyup',function(){
-          var cacheData = $(this).val();
-          for(var i in $('#giveCharacterModal #notSet li')){
-            if($('#giveCharacterModal #notSet li').eq(i).text().indexOf(cacheData)==-1){
-              $('#giveCharacterModal #notSet li').eq(i).addClass('hidden');
-            }else{
-              $('#giveCharacterModal #notSet li').eq(i).removeClass('hidden');
-            }
-          }
-       });
+       // 用户角色管理模态框内 删除已有角色
+      $('#memberGiveCharacterModal #choicedCharacter .delete').off('click').on('click',function(){
+        var user = 'user';
+        var id = '123';
+        var char = $(this).prev('.char').text();
+        var target = $(this);
+        var delteMemberCharacter = function(){
+          // 用户确定删除后，将删除角色id上传服务器
+          fetch(requestServer.updateMemberCharacter,{method:'POST',body:{id:id}}).then(res=>res.json()).then(data=>{
+            console.log(data)
+          }).catch(error=>{
+            that.tips('网络错误');
+          });
+          console.log(target);
+          target.parent().addClass('remove-animation');
+          setTimeout(function(){
+            target.parent().remove();
+          },1000);
+        };
+        that.confirms({info:'确定删除'+user+'用户的'+char+'角色吗'},delteMemberCharacter);
+      });
 
-       // 角色管理页面
-       // 新增角色
-      $('.character-action #addCharacter').off('click').on('click',function(){
-         $('#newCharacterModal .modal-title').html('新增角色');
-         $('#newCharacterModal').modal({'backdrop':'static'});
+
+       // 权限管理页面
+
+      // 权限  新增系统
+      $('.authority-action #addPlatform').off('click').on('click',function(){
+         $('#newPlatformModal .modal-title').html('基本信息');
+         // 清空文本框原有内容
+         $('#newPlatformModal input:text').val('');
+         $('#newPlatformModal').modal({'backdrop':'static'});
+          setTimeout(function(){$('#newPlatformModal input:text').eq(0).focus();},800);
+
       });
 
        // 权限管理页面
        // 新增权限
       $('.authority-action #addAuthority').off('click').on('click',function(){
          $('#newAuthorityModal .modal-title').html('新增权限');
+         // 清空文本框原有内容
+         $('#newAuthorityModal input:text').val('');
          $('#newAuthorityModal').modal({'backdrop':'static'});
+          setTimeout(function(){$('#newAuthorityModal input:text').eq(0).focus();},800);
+
+      });
+
+       // 新增角色
+      $('.character-action #addCharacter').off('click').on('click',function(){
+         $('#newCharacterModal .modal-title').html('新增角色');
+         // 清空文本框原有内容
+         $('#newCharacterModal input:text').val('');
+         $('#newCharacterModal').modal({'backdrop':'static'});
+          setTimeout(function(){$('#newCharacterModal input:text').eq(0).focus();},800);
+
+      });
+
+      $('.character-action #getCharacterPower').off('click').on('click',function(){
+         // var judgeParent = $('#content #character .breadcrumb li a').eq(2).text();
+         var judgeParent = $(this).parents('tr').find('td').eq(1).text();
+         console.log($(this).parents('tr'));
+         $('#getCharacterPowerModal .modal-title').html('权限管理-'+judgeParent);
+         $('#getCharacterPowerModal').modal({'backdrop':'static'});
+          setTimeout(function(){$('#getCharacterPowerModal input:text').eq(0).focus();},800);
+
+      });
+
+      $('.character-action #toMemberPower').off('click').on('click',function(){
+         // var judgeParent = $('#content #character .breadcrumb li a').eq(2).text();
+         var judgeParent = $(this).parents('tr').find('td').eq(1).text();
+         $('#giveMemberPowerModal .modal-title').html('人员赋予-'+judgeParent);
+          $('#giveMemberPowerModal .choice .search .count').text('('+($('#giveMemberPowerModal #notSet li').length+$('#giveMemberPowerModal #seted li').length)+'/'+$('#giveMemberPowerModal #seted li').length+')');
+
+         $('#giveMemberPowerModal').modal({'backdrop':'static'});
+          setTimeout(function(){$('#giveMemberPowerModal input:text').eq(0).focus();},800);
+
+      });
+
+
+      $('#getCharacterPowerModal  #power li input[type="checkbox"]').off('click').on('click',function(){
+            $(this).parent().parent().toggleClass('active');
+      });
+      // 穿梭框
+      $('#giveMemberPowerModal .areaList li label input[type="checkbox"]').off('click').on('click',function(){
+              $(this).parent().parent().toggleClass('active');
+      });
+      var choiceSet = function(){
+        $('#giveMemberPowerModal #notSet li .fa-plus').off('click').on('click',function(){
+          $(this).parent().find('input[type="checkbox"]').prop('checked',false);
+           var nodeClone = $(this).parent().clone();
+           nodeClone.removeClass('active').find('.fa-plus').removeClass('fa-plus').addClass('fa-minus');
+           $(this).parent().remove();
+           // console.log(nodeClone);
+           $('#giveMemberPowerModal #seted').append(nodeClone);
+           $('.choice .search .count').text('('+($('#giveMemberPowerModal #notSet li').length+$('#giveMemberPowerModal #seted li').length)+'/'+$('#giveMemberPowerModal #seted li').length+')');
+           choiceSet();
+           choiceNotSet();
+        });
+      };
+      var choiceNotSet = function(){
+        $('#giveMemberPowerModal #seted li .fa-minus').off('click').on('click',function(){
+          $(this).parent().find('input[type="checkbox"]').prop('checked',false);
+           var nodeClone = $(this).parent().clone();
+           nodeClone.removeClass('active').find('.fa-minus').removeClass('fa-minus').addClass('fa-plus');
+           $(this).parent().remove();
+           $('#giveMemberPowerModal #notSet').append(nodeClone);
+           $('.choice .search .count').text('('+($('#giveMemberPowerModal #notSet li').length+$('#giveMemberPowerModal #seted li').length)+'/'+$('#giveMemberPowerModal #seted li').length+')');
+           choiceSet();
+           choiceNotSet();
+        });
+      };
+      choiceSet();
+      choiceNotSet();
+
+      // 角色分配模糊匹配
+      $('.choice #search').off('keyup').on('keyup',function(){
+         var cacheData = $(this).val();
+         for(var i in $('#giveMemberPowerModal #notSet li')){
+           if($('#giveMemberPowerModal #notSet li').eq(i).text().indexOf(cacheData)==-1){
+             $('#giveMemberPowerModal #notSet li').eq(i).addClass('hidden');
+           }else{
+             $('#giveMemberPowerModal #notSet li').eq(i).removeClass('hidden');
+           }
+         }
+      });
+
+      $('#giveMemberPowerModal .choice .changicon .left').off('click').on('click',function(){
+        if($('#giveMemberPowerModal #seted li input:checked').length){
+          $(this).parent().parent().find('.fa-minus').click();
+        }else{
+          that.tips('请至少选择一条数据');
+        }
+      });
+
+      $('#giveMemberPowerModal .choice .changicon .right').off('click').on('click',function(){
+        if($('#giveMemberPowerModal #notSet li input:checked').length){
+         $('#giveMemberPowerModal #notSet li input:checked').parent().parent().find('.fa-plus').click();
+        }else{
+          that.tips('请至少选择一条数据');
+        }
       });
 
 
 
-    },
-    initPageAction_tree:function(){
 
-      $('.tree-container').off('mouseout').on('mouseover',function(event) {
-        $('#foldTree').addClass('hidden');
+    },
+    initPageAction_tree: function(){
+
+      $('#slideMenu').off('mouseout').on('mouseover',function(event) {
+        $('#foldTree').removeClass('hidden');
       });
 
       $('#content').off('mouseenter').on('mouseover',function(event) {
@@ -434,84 +497,209 @@ userManage.prototype = {
       });
 
     },
-    uploadFileReturnData:function(nextFunction){
-        /*
-        *上传文件处理函数
-        *@param{function} nextFunction 上传文件成功后执行的函数
-        */
+    updateTableBottomInfo: function(target){
+      var that = this;
+          // console.log(target);
+          target.find('#totalTable').text(target.find('tbody tr').length-target.find('tbody tr.remove-animation').length+'条数据');
+          target.find('#showCounts').text(target.find('tbody tr').length-target.find('tbody tr.remove-animation').length+'条数据');
+          target.find('input[type="checkbox"]').off('change').on('change',function(){
+            // console.log(target.find('tbody tr').length);
+            target.find('#totalTable').text(target.find('tbody tr').length-target.find('tbody tr.remove-animation').length+'条数据');
+            target.find('#showCounts').text(target.find('tbody tr').length-target.find('tbody tr.remove-animation').length+'条数据');
+            target.find('#selectedTable').text(target.find('tbody tr input:checked').length+'条数据');
+          });
+
+          // 用户管理单个数据操作
+          target.find('tr td a.update').off('click').on('click',function(){
+            var value = [$(this).parents('tr').find('td').eq(0).text(),$(this).parents('tr').find('td').eq(1).text(),$(this).parents('tr').find('td').eq(2).text(),$(this).parents('tr').find('td').eq(3).text(),$(this).parents('tr').find('td').eq(4).text()];
+              console.log(target.prop('id'));
+              if(target.prop('id')=='member'){
+                that.updateMemberInfo(value,target);
+              }else if(target.prop('id')=='platform'){
+                that.updatePlatformInfo(value,target);
+              }else if(target.prop('id')=='character'){
+                that.updateCharacterInfo(value,target);
+              }else if(target.prop('id')=='authority'){
+                that.updateAuthorityInfo(value,target);
+              }
+
+          });
+
+          target.find('tr td a.delete').off('click').on('click',function(){
+            var memberValue = [$(this).parents('tr').find('td').eq(1).text(),$(this).parents('tr').find('td').eq(2).text(),$(this).parents('tr').find('td').eq(3).text(),$(this).parents('tr').find('td').eq(4).text(),$(this).parents('tr').find('td').eq(5).text()];
+             that.removeRecorder(this,target);
+          });
+
+          // 成员  角色赋予
+          target.find('tr td a.toGiveCharacter').off('click').on('click',function(){
+            var value = [$(this).parents('tr').find('td').eq(0).text(),$(this).parents('tr').find('td').eq(1).text(),$(this).parents('tr').find('td').eq(2).text(),$(this).parents('tr').find('td').eq(3).text(),$(this).parents('tr').find('td').eq(4).text()];
+
+            that.setMemberAuthority(value,target);
+          });
+
+          // 角色管理  分配权限
+          target.find('tr td a.toGivePower').off('click').on('click',function(){
+             // var judgeParent = $('#content #character .breadcrumb li a').eq(2).text();
+             var judgeParent = $(this).parents('tr').find('td').eq(0).text();
+             console.log($(this).parents('tr'));
+             $('#getCharacterPowerModal .modal-title').html('权限管理-'+judgeParent);
+             $('#getCharacterPowerModal').modal({'backdrop':'static'});
+          });
+
+          // 角色管理  人员赋予
+          target.find('tr td a.authorityToMember').off('click').on('click',function(){
+             // var judgeParent = $('#content #character .breadcrumb li a').eq(2).text();
+             var judgeParent = $(this).parents('tr').find('td').eq(0).text();
+             $('#giveMemberPowerModal .modal-title').html('人员赋予-'+judgeParent);
+              $('#giveMemberPowerModal .choice .search .count').text('('+($('#giveMemberPowerModal #notSet li').length+$('#giveMemberPowerModal #seted li').length)+'/'+$('#giveMemberPowerModal #seted li').length+')');
+             $('#giveMemberPowerModal').modal({'backdrop':'static'});
+          });
+
     },
-    loadMember:function(memberArray,ifEmpty){
+    loadMember: function(memberArray,ifEmpty){
+       /*
+       *@param{object,string} memberArray为服务器返回的用户信息；ifEmpty判断是否清空当前表格
+       */
         var that = this;
         // 加载管理员信息
-        $('#memberTable thead input:checkbox').prop('checked',false);
+        // $('#member input.checkAll').removeClass('checkAll');
+        $('#member input[type="checkbox"]').prop('checked',false);
+        // console.log($('#member input.checkAll').prop('checked'));
         if(ifEmpty){
           $('#memberTable tbody').empty();
         }
         var memberArray = [
-          ['张飞','123456789','四川省成都市','超级管理员','增加删除','这个管理员很少上线'],
-          ['吕布','123456789','上海市','管理员','增加删除','这个管理员很少上线'],
-          ['关羽','123456789','云南省昆明市','管理员','增加删除','这个管理员很少上线'],
-          ['刘备','123456789','四川省广元市','普通用户','增加删除','这个管理员很少上线'],
-          ['吕布','123456789','上海市','管理员','增加删除','这个管理员很少上线'],
-          ['诸葛武侯','123456789','上海市','管理员','增加删除','这个管理员很少上线'],
-          ['吕布','123456789','上海市','管理员','增加删除','这个管理员很少上线'],
-          ['司马懿','123456789','上海市','管理员','增加删除','这个管理员很少上线'],
-          ['新浪','123456789','上海市','管理员','增加删除','这个管理员很少上线'],
-          ['人人','123456789','上海市','管理员','增加删除','这个管理员很少上线'],
-          ['貂蝉','123456789','西藏自治区','超级管理员','增加删除','这个管理员很少上线']];
+          ['张飞','0','23','123456789','四川省成都市','超级管理员','增加删除'],
+          ['吕布','0','23','123456789','上海市','管理员','增加删除'],
+          ['关羽','0','23','123456789','云南省昆明市','管理员','增加删除'],
+          ['刘备','0','23','123456789','四川省广元市','普通用户','增加删除'],
+          ['吕布','0','23','123456789','上海市','管理员','增加删除'],
+          ['诸葛武侯','0','23','123456789','上海市','管理员','增加删除'],
+          ['吕布','0','23','123456789','上海市','管理员','增加删除'],
+          ['司马懿','0','23','123456789','上海市','管理员','增加删除'],
+          ['新浪','0','23','123456789','上海市','管理员','增加删除'],
+          ['人人','0','23','123456789','上海市','管理员','增加删除'],
+          ['貂蝉','0','23','123456789','西藏自治区','超级管理员','增加删除']];
         for(var i in memberArray){
             if(i>9){break;}
-            var element = '<tr id="userCheckbox'+i+'"><th scope="row"><input type="checkbox" name=""></th><td>'+that.setFirstZero((parseInt(i)+1))+'</td><td>'+memberArray[i][0]+'</td><td>'+memberArray[i][1]+'</td><td>'+memberArray[i][2]+'</td><td>'+memberArray[i][3]+'</td><td>'+memberArray[i][4]+'</td><td>'+memberArray[i][5]+'</td><td><a href="javascript:void(0)" class="action update" "email me">修改</a><a href="javascript:void(0)" class="action toGiveCharacter" "email me">分配角色</a><a href="javascript:void(0)" class="action delete" "email me">删除</a></td></tr>';
+            // var element = '<tr id="userCheckbox'+i+'"><th scope="row"><label class="checkbox-label"><input type="checkbox" name=""><i class="checkbox"></i></label></th><td>'+that.setFirstZero((parseInt(i)+1))+'</td><td>'+memberArray[i][0]+'</td><td>'+memberArray[i][1]+'</td><td>'+memberArray[i][2]+'</td><td>'+memberArray[i][3]+'</td><td>'+memberArray[i][4]+'</td><td>'+memberArray[i][5]+'</td><td><a href="javascript:void(0)" class="action update" "email me">编辑</a><a href="javascript:void(0)" class="action toGiveCharacter" "email me">分配角色</a><a href="javascript:void(0)" class="action delete text-danger" "email me">删除</a></td></tr>';
+            var element = '<tr id="userCheckbox'+i+'"><th scope="row"><label class="checkbox-label"><input type="checkbox" name=""><i class="checkbox"></i></label></th><td>'+memberArray[i][0]+'</td><td>'+memberArray[i][1]+'</td><td>'+memberArray[i][2]+'</td><td>'+memberArray[i][3]+'</td><td>'+memberArray[i][4]+'</td><td>'+memberArray[i][5]+'</td><td>'+memberArray[i][6]+'</td><td><a href="javascript:void(0)" class="action update" "email me">编辑</a><a href="javascript:void(0)" class="action toGiveCharacter" "email me">角色分配</a><a href="javascript:void(0)" class="action delete text-danger" "email me">删除</a></td></tr>';
             $('#memberTable tbody').append(element);
         }
         that.updateTableBottomInfo($('#content #member'));
         that.initPagination($('#content #member'),6);
     },
-    loadCharacter:function(characterArray,ifEmpty){
-        var that = this;
-        // 加载角色列表
-        $('#characterTable thead input:checkbox').prop('checked',false);
-        if(ifEmpty){
-          $('#characterTable tbody').empty();
-        }
-        var characterArray = [
-          ['红牌楼','道路障碍','路面损毁','一周检查一次'],
-          ['高升桥','云南省昆明市','管理员','一周检查两次'],
-          ['茶店子','道路障碍','路面损毁','这个管理员很少上线'],
-          ['成都东站','上海市','管理员','一周检查一次'],
-          ['高升桥','道路障碍','路面损毁','一周检查两次']];
-        for(var i in characterArray){
-            if(i>9){break;}
-            // var element = '<tr id="userCheckbox'+i+'"><th scope="row"><input type="checkbox" name="" ></th><td>'+that.setFirstZero((parseInt(i)+1))+'</td><td>'+characterArray[i][0]+'</td><td>'+characterArray[i][1]+'</td><td>'+characterArray[i][2]+'</td><td>'+characterArray[i][3]+'</td><td>'+characterArray[i][4]+'</td><td><a href="javascript:void(0)" class="action edit" "email me">修改</a><a href="javascript:void(0)" class="action toGivePower" "email me">分配权限</a><a href="javascript:void(0)" class="action delete" "email me">删除</a></td></tr>';
-            var element = '<tr id="userCheckbox'+i+'"><th scope="row"><input type="checkbox" name=""></th><td>'+characterArray[i][0]+'</td><td>'+characterArray[i][1]+'</td><td>'+characterArray[i][2]+'</td><td>'+characterArray[i][3]+'</td><td><a href="javascript:void(0)" class="action update" "email me">修改</a><a href="javascript:void(0)" class="action toGivePower" "email me">分配权限</a><a href="javascript:void(0)" class="action delete" "email me">删除</a></td></tr>';
-              $('#characterTable tbody').append(element);
-        }
-        that.updateTableBottomInfo($('#content #character'));
-        that.initPagination($('#content #character'),7);
-
-    },
-    loadAuthority:function(authorityArray,ifEmpty){
+    loadPlatform: function(platformArray,ifEmpty){
+      /*
+      *@param{object,string} platformArray为服务器返回的平台信息；ifEmpty判断是否清空当前表格
+      */
         var that = this;
         // 加载权限列表
-        $('#authorityTable thead input:checkbox').prop('checked',false);
+        $('#platform  input[type="checkbox"]').prop('checked',false);
+        if(ifEmpty){
+          $('#platformTable tbody').empty();
+        }
+        var date  = new Date().getFullYear()+'-'+(parseInt(new Date().getMonth())+1)+'-'+new Date().getDate();
+        var platformArray = [
+            ['成都东站系统','上海市',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['红牌楼系统','道路障碍',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['成都东站系统','上海市',date,'增加，删除，修改，没设置','管理员、新闻发布员'],
+            ['高升桥系统','云南省昆明市',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['茶店子系统','道路障碍',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['成都东站系统','上海市',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['成都东站系统','东京市',date,'增加，删除，修改，没设置','管理员、地图定制员'],
+            ['高升桥系统','道路障碍',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员']];
+        for(var i in platformArray){
+            if(i>9){break;}
+            var element = '<tr id="userCheckbox'+i+'"><th scope="row"><label class="checkbox-label"><input type="checkbox" name=""><i class="checkbox"></i></label></th><td>'+platformArray[i][0]+'</td><td>'+platformArray[i][1]+'</td><td>'+platformArray[i][2]+'</td><td>'+platformArray[i][3]+'</td><td>'+platformArray[i][4]+'</td><td><a href="javascript:void(0)" class="action update" "email me">编辑</a><a href="javascript:void(0)" class="action manageAuthority" "email me">权限管理<i class="fa fa-share"></i></a><a href="javascript:void(0)" class="action manageCharacter" "email me">角色管理<i class="fa fa-share"></i></a><a href="javascript:void(0)" class="action delete text-danger" "email me">删除</a></td></tr>';
+            $('#platformTable tbody').append(element);
+        }
+
+        that.updateTableBottomInfo($('#content #platform'));
+        that.initPagination($('#content #platform'),100,7);
+
+        $('.manageAuthority').off('click').on('click',function(){
+           var Value = [$(this).parents('tr').find('td').eq(0).text(),$(this).parents('tr').find('td').eq(1).text(),$(this).parents('tr').find('td').eq(2).text(),$(this).parents('tr').find('td').eq(3).text(),$(this).parents('tr').find('td').eq(4).text()];
+          $('#content #platform').addClass('hidden');
+          $('#content #authority').removeClass('hidden');
+
+           that.loadAuthority('','empty',Value);
+           // that.loadAuthorityTree();
+           that.updateTableBottomInfo($('#content #authority'));
+           that.initPagination($('#content #authority'),30,7);
+        });
+
+        $('.manageCharacter').off('click').on('click',function(){
+            var Value = [$(this).parents('tr').find('td').eq(0).text(),$(this).parents('tr').find('td').eq(1).text(),$(this).parents('tr').find('td').eq(2).text(),$(this).parents('tr').find('td').eq(3).text(),$(this).parents('tr').find('td').eq(4).text()];
+           // console.log(111);
+           $('#content #platform').addClass('hidden');
+           $('#content #character').removeClass('hidden');
+
+           that.loadCharacter('','empty',Value);
+           // that.loadCharacterTree();
+           that.updateTableBottomInfo($('#content #character'));
+           that.initPagination($('#content #character'),50,7);
+        })
+    },
+    loadAuthority: function(authorityArray,ifEmpty,parent){
+      /*
+      *@param{object,string,object} authorityArray为服务器返回的权限信息；ifEmpty判断是否清空当前表格；parent为当前权限所在系统平台
+      */
+        var that = this;
+        // 加载权限列表
+        $('#authority input[type="checkbox"]').prop('checked',false);
+        $('#content #authority .breadcrumb li a').eq(2).text(parent[0]);
         if(ifEmpty){
           $('#authorityTable tbody').empty();
         }
+        var date  = new Date().getFullYear()+'-'+(parseInt(new Date().getMonth())+1)+'-'+new Date().getDate();
         var authorityArray = [
-            ['红牌楼','道路障碍','路面损毁','是','一周检查一次'],
-            ['高升桥','云南省昆明市','管理员','是','一周检查两次'],
-            ['茶店子','道路障碍','路面损毁','是','这个管理员很少上线'],
-            ['成都东站','上海市','管理员','是','一周检查一次'],
-            ['高升桥','道路障碍','路面损毁','是','一周检查两次']];
+            ['成都东站系统','上海市',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['红牌楼系统','道路障碍',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['成都东站系统','上海市',date,'增加，删除，修改，没设置','管理员、新闻发布员'],
+            ['高升桥系统','云南省昆明市',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['茶店子系统','道路障碍',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['成都东站系统','上海市',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员'],
+            ['成都东站系统','东京市',date,'增加，删除，修改，没设置','管理员、地图定制员'],
+            ['高升桥系统','道路障碍',date,'增加，删除，修改，没设置','管理员、新闻发布员、地图定制员']];
         for(var i in authorityArray){
             if(i>9){break;}
-            var element = '<tr id="userCheckbox'+i+'"><th scope="row"><input type="checkbox" name=""></th><td>'+that.setFirstZero((parseInt(i)+1))+'</td><td>'+authorityArray[i][0]+'</td><td>'+authorityArray[i][1]+'</td><td>'+authorityArray[i][2]+'</td><td>'+authorityArray[i][3]+'</td><td><a href="javascript:void(0)" class="action update" "email me">修改</a><a href="javascript:void(0)" class="action delete" "email me">删除</a></td></tr>';
+            var element = '<tr id="userCheckbox'+i+'"><th scope="row"><label class="checkbox-label"><input type="checkbox" name=""><i class="checkbox"></i></label></th><td>'+authorityArray[i][0]+'</td><td>'+authorityArray[i][1]+'</td><td>'+authorityArray[i][2]+'</td><td>'+authorityArray[i][3]+'</td><td>'+authorityArray[i][4]+'</td><td><a href="javascript:void(0)" class="action update" "email me">编辑</a><a href="javascript:void(0)" class="action delete text-danger" "email me">删除</a></td></tr>';
             $('#authorityTable tbody').append(element);
         }
             that.updateTableBottomInfo($('#content #authority'));
             that.initPagination($('#content #authority'),100,7);
     },
-    loadMemberTree:function(data){
+    loadCharacter: function(characterArray,ifEmpty,parent){
+      /*
+      *@param{object,string,object} characterArray为服务器返回的角色信息；ifEmpty判断是否清空当前表格；parent为当前角色所在系统平台
+      */
+        var that = this;
+        // 加载角色列表
+        $('#character input[type="checkbox"]').prop('checked',false);
+        $('#content #character .breadcrumb li a').eq(2).text(parent[0]);
+        if(ifEmpty){
+          $('#characterTable tbody').empty();
+        }
+        var date  = new Date().getFullYear()+'-'+(parseInt(new Date().getMonth())+1)+'-'+new Date().getDate();
+        var characterArray = [
+          ['高升桥',date,'云南省昆明市','管理员','一周检查两次'],
+          ['红牌楼',date,'道路障碍','路面损毁','一周检查一次'],
+          ['高升桥',date,'云南省昆明市','管理员','一周检查两次'],
+          ['高升桥',date,'云南省昆明市','管理员','一周检查两次'],
+          ['茶店子',date,'道路障碍','路面损毁','这个管理员很少上线'],
+          ['成都东站',date,'上海市','管理员','一周检查一次'],
+          ['高升桥',date,'道路障碍','路面损毁','一周检查两次']];
+        for(var i in characterArray){
+            if(i>9){break;}
+            // var element = '<tr id="userCheckbox'+i+'"><th scope="row"><label class="checkbox-label"><input type="checkbox" name="" <i class="checkbox"></i></label>></th><td>'+that.setFirstZero((parseInt(i)+1))+'</td><td>'+characterArray[i][0]+'</td><td>'+characterArray[i][1]+'</td><td>'+characterArray[i][2]+'</td><td>'+characterArray[i][3]+'</td><td>'+characterArray[i][4]+'</td><td><a href="javascript:void(0)" class="action edit" "email me">修改</a><a href="javascript:void(0)" class="action toGivePower" "email me">分配权限</a><a href="javascript:void(0)" class="action delete text-danger" "email me">删除</a></td></tr>';
+            var element = '<tr id="userCheckbox'+i+'"><th scope="row"><label class="checkbox-label"><input type="checkbox" name=""><i class="checkbox"></i></label></th><td>'+characterArray[i][0]+'</td><td>'+characterArray[i][1]+'</td><td>'+characterArray[i][2]+'</td><td>'+characterArray[i][3]+'</td><td>'+characterArray[i][4]+'</td><td><a href="javascript:void(0)" class="action update" "email me">编辑</a><a href="javascript:void(0)" class="action toGivePower" "email me">分配权限</a><a href="javascript:void(0)" class="action authorityToMember" "email me">人员赋予</a><a href="javascript:void(0)" class="action delete text-danger" "email me">删除</a></td></tr>';
+              $('#characterTable tbody').append(element);
+        }
+        that.updateTableBottomInfo($('#content #character'));
+        that.initPagination($('#content #character'),7);
+    },
+    loadMemberTree: function(data){
       var that = this;
       var tree = [
        {
@@ -600,6 +788,7 @@ userManage.prototype = {
         }
       });
 
+      // 废弃
       $('.tree-container').off('click').on('click',function(ev){
         clickTarget = ev.target;
         var clickNode = $('#memberTree').treeview('getSelected')[0];
@@ -626,7 +815,7 @@ userManage.prototype = {
 
       // $('#memberTree').treeview({});
     },
-    loadCharacterTree:function(data){
+    loadCharacterTree: function(data){
       var that = this;
       var tree = [
        {
@@ -731,7 +920,7 @@ userManage.prototype = {
         };
       });
     },
-    loadAuthorityTree:function(data){
+    loadAuthorityTree: function(data){
 
       var that = this;
       var tree = [
@@ -838,7 +1027,10 @@ userManage.prototype = {
 
       // $('#memberTree').treeview({});
     },
-    initPagination:function(target,totalPage,pageCount){
+    initPagination: function(target,totalPage,pageCount){
+      /*
+      * @param {object,number,number} target为分页器所在容器jQuery节点；totalPage为总页面；pageCount为每次切换的页码数量
+      */
       var that = this;
       // var this.initPagination.prototype = initPagination;
       totalPage -= 1;
@@ -846,9 +1038,11 @@ userManage.prototype = {
       var matchPagination = target.find('.pagination').eq(0);
       // 先清空原有页码，再添加新的
       matchPagination.empty();
+
       if(totalPage<pageCount-1){
-        pageCount = totalPage+1;
+        pageCount = totalPage;
       }
+
       // 当翻页后，上一页按钮的操作
       this.initPagination.initPrePageCount = function(prePage_import){
             var prePage = '';
@@ -857,10 +1051,12 @@ userManage.prototype = {
               prePage = parseInt(target.find('.page-num.page-change').first().prop('id').replace(/page-num-/,''));
             }else{
               prePage = prePage_import;
-            }
-            console.log(prePage,pageCount);
+            };
+            // console.log(prePage,pageCount);
 
             var pageCountClone2 = pageCount;
+
+            // 当剩余页数大于每次切换的页数时，显示下翻的按钮，反之隐藏
             if(totalPage-prePage+2>=pageCount){
                 target.find('#page-num-more').show();
                 // pageCountClone2 = pageCount
@@ -871,14 +1067,18 @@ userManage.prototype = {
 
             target.find('.page-num.page-change').remove();
 
+            // 当剩余页数小于每次切换的页数时，需将剩余页数重置为切换页数，且隐藏上翻的按钮
             if(prePage<=(pageCount+1)){
-              prePage = pageCount + 1;
+              if(totalPage>pageCount){
+                 prePage = pageCount + 1;
+              }
               target.find('#page-num-morePre').hide();
             }else{
               target.find('#page-num-morePre').show();
             }
 
-            console.log(prePage,pageCount);
+            // console.log(prePage,pageCount);
+            // 从上一页的最后一页开始后翻
             for(var i = prePage;i>2;i--){
               if(i==prePage-pageCountClone2){
                 break;
@@ -888,8 +1088,9 @@ userManage.prototype = {
             };
 
             target.find('.pagination li.active').removeClass('active');
-
-            that.changePagination(target,totalPage,1,'');
+            // 页码刷新后，重新添加点击事件，传参最小页码和最大页码
+            that.changePagination(target,totalPage+1,1,'');
+            // 如果点击的是最后一页，将选中状态传递给最后一页，反之传给每次切换完成后最后一个，模拟点击事件
             if(prePage_import){
               target.find('.pagination li#page-num-'+(totalPage+1)).addClass('active');
               // target.find('.pagination li#page-num-'+(totalPage+1)).click();
@@ -914,11 +1115,9 @@ userManage.prototype = {
         }
 
         target.find('.page-num.page-change').remove();
-        // console.log(nextPage,totalPage,pageCount);
         if(nextPage>=totalPage-pageCount){
           target.find('#page-num-more').hide();
           if(totalPage<=pageCount){
-              // target.find('#page-num-more').hide();
             nextPage = ((totalPage+1)-pageCount)?(totalPage-pageCount):(1);
           }else{
             // target.find('#page-num-more').show();
@@ -929,6 +1128,8 @@ userManage.prototype = {
         }
 
         var pageCountClone = pageCount;
+
+        // console.log(nextPage,pageCount);
         if((nextPage+1)>pageCount){
           target.find('#page-num-morePre').show();
         }else{
@@ -947,7 +1148,7 @@ userManage.prototype = {
 
         target.find('.pagination li.active').removeClass('active');
 
-        that.changePagination(target,totalPage,'',totalPage+1);
+        that.changePagination(target,totalPage+1,'',totalPage+1);
         if(nextPage_import){
           target.find('.pagination li#page-num-'+nextPage_import).addClass('active');
         }else{
@@ -957,9 +1158,8 @@ userManage.prototype = {
         // target.find('.pagination li.page-num').first().click();
       };
 
-
       // 插入上一页
-      matchPagination.append('<li class="page-item page-change page-tool previousPage"><a class="page-link" href="#" aria-label="Previous" title="上一页"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li><li class="page-item page-tool page-num" id="page-num-1"><a class="page-link" href="#">'+1+'</a></li>');
+      matchPagination.append('<li class="page-item page-change page-tool previousPage"><a class="page-link" href="#" aria-label="Previous" title="上一页"><span aria-hidden="true">上页</span><span class="sr-only">Previous</span></a></li><li class="page-item page-tool page-num" id="page-num-1"><a class="page-link" href="#">'+1+'</a></li>');
       if(!target.find('#page-num-morePre').length){
         var moreLenPre ='<li class="page-item" title="向前移" style="display:none" id="page-num-morePre"><a class="page-link" href="#">...</a></li>';
         matchPagination.find('.previousPage').next().after(moreLenPre);
@@ -991,21 +1191,17 @@ userManage.prototype = {
       };
 
       // console.log(target.find('#page-num-more'));
-      matchPagination.append('<li class="page-item page-tool page-num" id="page-num-'+(totalPage+1)+'"><a class="page-link" href="#">'+(totalPage+1)+'</a></li><li class="page-item page-change page-tool nextPage" title="下一页"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>');
-
-      /*target.find('#page-num-1').off('click').on('click',function(){
-        initNextPageCount(1);
-      });
-      target.find('#page-num-'+(totalPage+1)).off('click').on('click',function(){
-        initPrePageCount(totalPage+1);
-      });*/
+      matchPagination.append('<li class="page-item page-tool page-num" id="page-num-'+(totalPage+1)+'"><a class="page-link" href="#">'+(totalPage+1)+'</a></li><li class="page-item page-change page-tool nextPage" title="下一页"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">下页</span><span class="sr-only">Next</span></a></li>');
 
       target.find('.pagination li.active').removeClass('active');
       target.find('.pagination li.page-num').first().addClass('active');
       that.changePagination(target,totalPage+1);
-
     },
-    changePagination:function(target,totalPage,pageRangeMin,pageRangeMax){
+    changePagination: function(target,totalPage,pageRangeMin,pageRangeMax){
+      /*
+      *@param {object,number,number,number} target为分页器所在容器的外层jQuery节点；totalpage为页码总数；pageRangeMin为当前切换的第一页；pageRangeMax为当前切换的最后一页
+      * pageRangeMin和pageRangeMax由外部传入，是为了不影响固定的第一页和最后一页
+      */
       var that = this;
       target.find('.pagination li.page-tool').off('click').on('click',function(i){
         if(!pageRangeMin){
@@ -1015,6 +1211,7 @@ userManage.prototype = {
            pageRangeMax = parseInt(target.find('.pagination li.page-num').last().prop('id').replace(/page-num-/,''));
         };
         var oldPage = parseInt($(this).prop('id').replace(/page-num-/,''));
+
         var changedPage = '1';
         if(target.find('.pagination li.active').length){
             changedPage = parseInt(target.find('.pagination li.active').prop('id').replace(/page-num-/,''));
@@ -1043,28 +1240,26 @@ userManage.prototype = {
           changedPage = oldPage;
         }
 
+        // console.log($(this).prop('id'),totalPage);
         if($(this).prop('id')=="page-num-1"){
           that.initPagination.initNextPageCount(1);
         }else if($(this).prop('id')=='page-num-'+totalPage){
           that.initPagination.initPrePageCount(totalPage);
         }
       // console.log(oldPage,changedPage,pageRangeMin,pageRangeMax);
-// 理论是这样，可能即便这样软件也生成不了，不过这个理论都不成立，所以就没的说了
         // 此处请求服务器翻页数据
       fetch(requestURL.changedPage+'?changedPage='+changedPage).then(res=>res.json()).then(data=>{
           console.log(data);
         }).catch(error=>{
           // console.log($('#page-num-'+changedPage));
           that.tips('网络出错');
+          // 请求成功后，清除原选中状态，切换active到选中的页码
           target.find('.pagination li.active').removeClass('active');
           target.find('#page-num-'+changedPage).addClass('active');
-          // target.find('.pagination li.active').siblings().removeClass('active');
         });
-
       });
-      // target.find('.pagination li.active').click();
     },
-    setFirstZero:function(num){
+    setFirstZero: function(num){
         /*
          * 小于10的数字，添0格式化
          * @param {number} num 需要格式化的数字
@@ -1075,10 +1270,10 @@ userManage.prototype = {
             return num;
         }
     },
-    tips:function(msg,delay){
+    tips: function(msg,delay){
         /*
         * 消息通知
-        * @param{string，number} msg 显示的信息  delay显示时间
+        * @param{string，number} msg 显示的信息；delay显示时间
         */
         var tip_cont =  "<div class='tips'><span>";tip_cont += msg;tip_cont +='</span></div>';
         if ($('.tips')[0]) {
@@ -1094,10 +1289,10 @@ userManage.prototype = {
                 $(this).remove();
             });
     },
-    confirms:function(msg,yes,no){
+    confirms: function(msg,yes,no){
         /*
         * 消息通知
-        * @param{msg，yes,no} msg，{title，info}显示的标题与显示内容，yes与no为选择后执行的函数
+        * @param{object，function,function} msg：json，{title:''，info:''},分别为显示的标题与显示内容；yes与no为选择后执行的函数
         */
         var that = this;
         var id = new Date().getTime();
